@@ -43,7 +43,7 @@ android {
     flavorDimensions "default"
     productFlavors {
         flavorAtest {
-            applicationId "net.gsantner.markor_test"
+            applicationId "net.dim2004.markor_custom"
             versionCode = Integer.parseInt(new Date().format('yyMMdd'))
             versionName = defaultConfig.versionName + "-" + new Date().format('HHmm')
             buildConfigField "boolean", "IS_TEST_BUILD", "true"

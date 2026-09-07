@@ -53,6 +53,9 @@ import net.gsantner.opoc.util.GsFileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import other.writeily.widget.WrMarkorWidgetProvider;
@@ -381,6 +384,50 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
         }
     }
 
+        private void createInstantNote() {
+        if (_notebook == null || _notebook.getAdapter() == null) {
+            return;
+        }
+
+        final File folder = _notebook.getCurrentFolder();
+
+        if (folder == null || !_notebook.getAdapter().isCurrentFolderWriteable()) {
+            return;
+        }
+
+        final String timestamp = new SimpleDateFormat(
+                "yyyy-MM-dd'T'HHmmss",
+                Locale.US
+        ).format(new Date());
+
+        File file = new File(folder, timestamp + ".md");
+
+        int suffix = 2;
+        while (file.exists()) {
+            file = new File(folder, timestamp + "-" + suffix + ".md");
+            suffix++;
+        }
+
+        final Document document =
+                new Document(file, FormatRegistry.FORMAT_MARKDOWN);
+
+        if (document.saveContent(this, "", _cu, true)) {
+            _appSettings.setDocumentFormat(
+                    document.path,
+                    FormatRegistry.FORMAT_MARKDOWN
+            );
+            _appSettings.setLastEditPosition(document.path, 0);
+
+            newItemCallback(file);
+        } else {
+            Toast.makeText(
+                    this,
+                    R.string.file_does_not_exist_and_cant_be_created,
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+    
     private void showLargeFileOpenToastIfNeeded(final File file) {
         final long LARGE_FILE_TOAST_THRESHOLD_BYTES = 128L * 1024L;
 

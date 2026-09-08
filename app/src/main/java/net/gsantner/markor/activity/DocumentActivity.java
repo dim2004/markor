@@ -212,6 +212,12 @@ public class DocumentActivity extends MarkorBaseActivity {
                 startInPreview = null;
             }
 
+            final boolean startWithKeyboard =
+                    intent.getBooleanExtra(
+                            DocumentEditAndViewFragment.START_WITH_KEYBOARD,
+                            false
+                    );
+
             // Three cases
             // 1. We have an editor open and it is the same document - show the requested line
             // 2. We have an editor open and it is a different document - open the new document

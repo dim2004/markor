@@ -53,7 +53,8 @@ public class DocumentActivity extends MarkorBaseActivity {
         final File file = (File) intent.getSerializableExtra(Document.EXTRA_FILE);
         final Integer lineNumber = intent.hasExtra(Document.EXTRA_FILE_LINE_NUMBER) ? intent.getIntExtra(Document.EXTRA_FILE_LINE_NUMBER, -1) : null;
         final Boolean doPreview = intent.hasExtra(Document.EXTRA_DO_PREVIEW) ? intent.getBooleanExtra(Document.EXTRA_DO_PREVIEW, false) : null;
-        launch(activity, file, doPreview, lineNumber);
+        final boolean startWithKeyboard = intent.getBooleanExtra(DocumentEditAndViewFragment.START_WITH_KEYBOARD, false);
+        launch(activity, file, doPreview, lineNumber, startWithKeyboard);
     }
 
     public static void launch(final Activity activity, final Uri uri) {
@@ -73,11 +74,22 @@ public class DocumentActivity extends MarkorBaseActivity {
         launch(activity, file, doPreview, lineNumber, false);
     }
 
-    private static void launch(
+    public static void launch(
             final Activity activity,
             final File file,
             final Boolean doPreview,
             final Integer lineNumber,
+            final boolean startWithKeyboard
+    ) {
+        launchInternal(activity, file, doPreview, lineNumber, startWithKeyboard, false);
+    }
+
+    private static void launchInternal(
+            final Activity activity,
+            final File file,
+            final Boolean doPreview,
+            final Integer lineNumber,
+            final boolean startWithKeyboard,
             final boolean forceOpenInThisApp
     ) {
         if (activity == null || file == null) {
@@ -121,6 +133,10 @@ public class DocumentActivity extends MarkorBaseActivity {
             if (doPreview != null) {
                 intent.putExtra(Document.EXTRA_DO_PREVIEW, doPreview);
             }
+
+            if (startWithKeyboard) {
+                intent.putExtra(DocumentEditAndViewFragment.START_WITH_KEYBOARD, true);
+            }
         }
 
         intent.putExtra(Document.EXTRA_FILE, file);
@@ -134,7 +150,7 @@ public class DocumentActivity extends MarkorBaseActivity {
                     .setTitle(R.string.open_with)
                     .setMessage(R.string.selected_file_may_be_a_textfile_want_to_open_in_editor)
                     .setIcon(R.drawable.ic_open_in_browser_black_24dp)
-                    .setPositiveButton(R.string.app_name, (dialog1, which) -> DocumentActivity.launch(activity, file, null, null, true))
+                    .setPositiveButton(R.string.app_name, (dialog1, which) -> DocumentActivity.launchInternal(activity, file, null, null, false, true))
                     .setNegativeButton(R.string.other, (dialog1, which) -> new MarkorContextUtils(activity).viewFileInOtherApp(activity, file, null))
                     .create()
                     .show();
@@ -233,15 +249,15 @@ public class DocumentActivity extends MarkorBaseActivity {
                         }
                     } else {
                         // Current document is different - launch the new document
-                        launch(this, file, startInPreview, startLine);
+                        launch(this, file, startInPreview, startLine, startWithKeyboard);
                     }
                 } else {
                     // Current fragment is not an editor - launch the new document
-                    launch(this, file, startInPreview, startLine);
+                    launch(this, file, startInPreview, startLine, startWithKeyboard);
                 }
             } else {
                 // No fragment open - open the document
-                showFragment(DocumentEditAndViewFragment.newInstance(doc, startLine, startInPreview));
+                showFragment(DocumentEditAndViewFragment.newInstance(doc, startLine, startInPreview, startWithKeyboard));
             }
         }
     }

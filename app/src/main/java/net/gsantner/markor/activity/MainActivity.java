@@ -63,6 +63,7 @@ import other.writeily.widget.WrMarkorWidgetProvider;
 public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFragment.FilesystemFragmentOptionsListener {
 
     public static boolean IS_DEBUG_ENABLED = false;
+    public static final String ACTION_CREATE_INSTANT_NOTE = "net.gsantner.markor.action.CREATE_INSTANT_NOTE";
 
     private BottomNavigationView _bottomNav;
     private ViewPager2 _viewPager;
@@ -151,6 +152,11 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
     @Override
     public void onActivityFirstTimeVisible() {
         super.onActivityFirstTimeVisible();
+
+        if (handleInstantNoteLauncherIntent(getIntent())) {
+            return;
+        }
+
         // Switch to tab if specific folder _not_ requested, and not recreating from saved instance
         final int startTab = _appSettings.getAppStartupTab();
         if (startTab != R.id.nav_notebook && MarkorContextUtils.getValidIntentFile(getIntent(), null) == null) {
@@ -235,6 +241,12 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
     @Override
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
+
+        if (handleInstantNoteLauncherIntent(intent)) {
+            return;
+        }
+
         final File file = MarkorContextUtils.getValidIntentFile(intent, null);
         if (_notebook != null && file != null) {
             hideKeyboard();
@@ -245,6 +257,36 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
                 _notebook.getAdapter().showFile(file);
             }
             _notebook.setReloadRequiredOnResume(false);
+        }
+    }
+
+    private boolean handleInstantNoteLauncherIntent(final Intent intent) {
+        if (intent == null || !ACTION_CREATE_INSTANT_NOTE.equals(intent.getAction())) {
+            return false;
+        }
+
+        // Consume the launcher action so an Activity recreation cannot create a second note.
+        intent.setAction(null);
+
+        final int notebookPos = tabIdToPos(R.id.nav_notebook);
+        if (_sectionsAdapter != null) {
+            _sectionsAdapter.ensureRealized(notebookPos);
+        }
+        _viewPager.setCurrentItem(notebookPos, false);
+        createInstantNoteWhenNotebookReady(0);
+        return true;
+    }
+
+    private void createInstantNoteWhenNotebookReady(final int attempt) {
+        if (_notebook != null
+                && _notebook.getAdapter() != null
+                && _notebook.getCurrentFolder() != null) {
+            createInstantNote();
+            return;
+        }
+
+        if (attempt < 20) {
+            _viewPager.postDelayed(() -> createInstantNoteWhenNotebookReady(attempt + 1), 50);
         }
     }
 

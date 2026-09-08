@@ -386,7 +386,7 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
         }
     }
 
-        private void createInstantNote() {
+    private void createInstantNote() {
         if (_notebook == null || _notebook.getAdapter() == null) {
             return;
         }
@@ -420,7 +420,17 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
             );
             _appSettings.setLastEditPosition(document.path, 0);
 
-            newItemCallback(file);
+            DocumentActivity.launch(
+                    MainActivity.this,
+                    file,
+                    false,
+                    null,
+                    true
+            );
+
+            if (_notebook != null && _notebook.getAdapter() != null) {
+                _notebook.getAdapter().showFile(file);
+            }
         } else {
             Toast.makeText(
                     this,
@@ -429,7 +439,7 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
             ).show();
         }
     }
-    
+
     private void showLargeFileOpenToastIfNeeded(final File file) {
         final long LARGE_FILE_TOAST_THRESHOLD_BYTES = 128L * 1024L;
 

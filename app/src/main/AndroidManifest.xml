@@ -179,7 +179,21 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-
+        
+        <activity
+            android:name=".activity.openeditor.OpenInstantNoteActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:icon="@drawable/ic_launcher_quicknote"
+            android:label="Instant Note"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        
         <activity
             android:name=".activity.openeditor.OpenShareIntoActivity"
             android:enabled="false"

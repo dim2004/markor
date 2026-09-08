@@ -83,22 +83,43 @@ public class DocumentEditAndViewFragment extends MarkorBaseFragment implements F
     public static final String FRAGMENT_TAG = "DocumentEditAndViewFragment";
     public static final String SAVESTATE_DOCUMENT = "DOCUMENT";
     public static final String START_PREVIEW = "START_PREVIEW";
+    public static final String START_WITH_KEYBOARD = "START_WITH_KEYBOARD";
 
     public static float VIEW_FONT_SCALE = 100f / 15.7f;
 
-    public static DocumentEditAndViewFragment newInstance(final @NonNull Document document, final Integer lineNumber, final Boolean preview) {
-        DocumentEditAndViewFragment f = new DocumentEditAndViewFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(Document.EXTRA_DOCUMENT, document);
-        if (lineNumber != null) {
-            args.putInt(Document.EXTRA_FILE_LINE_NUMBER, lineNumber);
-        }
-        if (preview != null) {
-            args.putBoolean(START_PREVIEW, preview);
-        }
-        f.setArguments(args);
-        return f;
+public static DocumentEditAndViewFragment newInstance(
+        final @NonNull Document document,
+        final Integer lineNumber,
+        final Boolean preview
+) {
+    return newInstance(document, lineNumber, preview, false);
+}
+
+public static DocumentEditAndViewFragment newInstance(
+        final @NonNull Document document,
+        final Integer lineNumber,
+        final Boolean preview,
+        final boolean startWithKeyboard
+) {
+    DocumentEditAndViewFragment f = new DocumentEditAndViewFragment();
+
+    Bundle args = new Bundle();
+
+    args.putSerializable(Document.EXTRA_DOCUMENT, document);
+
+    if (lineNumber != null) {
+        args.putInt(Document.EXTRA_FILE_LINE_NUMBER, lineNumber);
     }
+
+    if (preview != null) {
+        args.putBoolean(START_PREVIEW, preview);
+    }
+
+    args.putBoolean(START_WITH_KEYBOARD, startWithKeyboard);
+
+    f.setArguments(args);
+    return f;
+}
 
     private HighlightingEditor _hlEditor;
     private WebView _webView;
@@ -251,6 +272,8 @@ public class DocumentEditAndViewFragment extends MarkorBaseFragment implements F
     protected void onFragmentFirstTimeVisible() {
         final Bundle args = getArguments();
         final boolean hasLineNumber = args != null && args.containsKey(Document.EXTRA_FILE_LINE_NUMBER);
+        final boolean startWithKeyboard =
+        args != null && args.getBoolean(START_WITH_KEYBOARD, false);
         final int targetSelection;
         if (hasLineNumber) {
             final int lineNumber = args.getInt(Document.EXTRA_FILE_LINE_NUMBER);
@@ -285,8 +308,20 @@ public class DocumentEditAndViewFragment extends MarkorBaseFragment implements F
         });
 
         // Fade in to hide initial jank
-        _hlEditor.post(() -> _hlEditor.animate().alpha(1).setDuration(250).start());
-        setupHighlightingScrollRestore();
+_hlEditor.post(() -> _hlEditor.animate().alpha(1).setDuration(250).start());
+
+if (startWithKeyboard && !_isPreviewVisible) {
+    final Activity activity = getActivity();
+
+    if (activity != null) {
+        _hlEditor.postDelayed(() -> {
+            _hlEditor.requestFocus();
+            _cu.showSoftKeyboard(activity, true, _hlEditor);
+        }, 300);
+    }
+}
+
+setupHighlightingScrollRestore();
     }
 
     private void setupHighlightingScrollRestore() {

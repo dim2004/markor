@@ -2933,7 +2933,7 @@ public class GsContextUtils {
         }
         ObjectAnimator animator = ObjectAnimator.
                 ofInt(view, "backgroundColor", 0x30888888, 0x50888888, 0x00888888)
-                .setDuration(600);
+                .setDuration(1200);
         animator.setEvaluator(new ArgbEvaluator());
         animator.start();
     }

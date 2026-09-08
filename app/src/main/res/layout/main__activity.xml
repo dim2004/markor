@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+  <?xml version="1.0" encoding="utf-8" ?> 
+- <!-- 
 /*#######################################################
  *
  *   Maintained 2017-2025 by Gregor Santner <gsantner AT mailbox DOT org>
@@ -6,8 +7,10 @@
  *   License of this file: Apache 2.0
  *     https://www.apache.org/licenses/LICENSE-2.0
  *
-#########################################################*/
--->
+ #########################################################*/
+
+
+  --> 
 - <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/background" android:fitsSystemWindows="true" android:theme="@style/AppTheme.Unified" tools:context="net.gsantner.markor.activity.MainActivity">
 - <com.google.android.material.appbar.AppBarLayout android:id="@+id/appbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" android:theme="@style/AppTheme.Light.AppBarOverlay">
   <androidx.appcompat.widget.Toolbar android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" android:background="?attr/colorPrimary" android:theme="@style/LightTextToolbarOverlay" app:subtitleTextColor="@color/dark__secondary_text" app:title="@string/app_name" /> 

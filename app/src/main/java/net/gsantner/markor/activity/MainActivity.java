@@ -70,7 +70,7 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
     private GsFileBrowserFragment _notebook;
     private DocumentEditAndViewFragment _quicknote, _todo;
     private MoreFragment _more;
-    private FloatingActionButton _fab;
+    private FloatingActionButton _fab, _fabInstantNote;
 
     private MarkorContextUtils _cu;
     private File _quickSwitchPrevFolder = null;
@@ -95,6 +95,8 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
         _fab = findViewById(R.id.fab_add_new_item);
         _fab.setOnClickListener(this::onClickFab);
         _fab.setOnLongClickListener(this::onLongClickFab);
+        _fabInstantNote = findViewById(R.id.fab_instant_note);
+        _fabInstantNote.setOnClickListener(v -> createInstantNote());
         _viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -519,9 +521,11 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
 
         if (pos == tabIdToPos(R.id.nav_notebook)) {
             _fab.show();
+            _fabInstantNote.show();
             hideKeyboard();
         } else {
             _fab.hide();
+            _fabInstantNote.hide();
         }
 
         setTitle(getPosTitle(pos));
